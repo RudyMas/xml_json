@@ -1,0 +1,22 @@
+{
+  "name": "rudymas/xml_json",
+  "description": "Convert data between Array, JSON and XML",
+  "type": "library",
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Rudy Mas",
+      "email": "rudy.mas@rudymas.be"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">= 5.4.0 || >= 7.0",
+    "rudymas/filemanager": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "RudyMas\\XML_JSON\\": "src/"
+    }
+  }
+}
