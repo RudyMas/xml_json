@@ -1,8 +1,9 @@
-# A PDO extension class
+# This class can be used to convert data between an array, XML and/or JSON
+
 ## Installation
 Install the package using composer.
 ```
-composer require rudymas/pdo-ext
+composer require rudymas/xml-json
 ```
 
 ## Usage example
