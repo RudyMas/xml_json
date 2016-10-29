@@ -3,7 +3,7 @@
 ## Installation
 Install the package using composer.
 ```
-composer require rudymas/xml-json
+composer require rudymas/xml_json
 ```
 
 ## Usage example

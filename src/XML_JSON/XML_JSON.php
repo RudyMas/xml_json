@@ -14,7 +14,7 @@ use SimpleXMLElement;
  * @author      Rudy Mas <rudy.mas@rudymas.be>
  * @copyright   2016, rudymas.be. (http://www.rudymas.be/)
  * @license     https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version     0.3.0
+ * @version     0.3.1
  * @package     RudyMas\XML_JSON
  */
 class XML_JSON
@@ -81,7 +81,7 @@ class XML_JSON
      *
      * @param string    $xmlField   The opening tag for the XML file
      */
-    public function array2xml($xmlField = '')
+    public function array2xml($xmlField)
     {
         $xml = new SimpleXMLElement($xmlField);
         $this->createXml($xml, $this->arrayData);
@@ -151,7 +151,7 @@ class XML_JSON
     public function json2xml()
     {
         $this->json2array();
-        $this->array2xml();
+        $this->array2xml('<?xml version="1.0" encoding="UTF-8"?><FromJSON></FromJSON>');
     }
 
     /**
