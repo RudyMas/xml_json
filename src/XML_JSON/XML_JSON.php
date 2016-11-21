@@ -14,7 +14,7 @@ use SimpleXMLElement;
  * @author      Rudy Mas <rudy.mas@rudymas.be>
  * @copyright   2016, rudymas.be. (http://www.rudymas.be/)
  * @license     https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version     0.3.1
+ * @version     0.4.0
  * @package     RudyMas\XML_JSON
  */
 class XML_JSON
@@ -26,7 +26,7 @@ class XML_JSON
     /**
      * Load XML file into $xmlData
      *
-     * @param string    $XMLfile   Filename of the XML-file to read
+     * @param string $XMLfile Filename of the XML-file to read
      */
     public function loadXML($XMLfile)
     {
@@ -37,7 +37,7 @@ class XML_JSON
     /**
      * Save $xmlData into XML file
      *
-     * @param string    $XMLfile    Filename of the XML-file to write
+     * @param string $XMLfile Filename of the XML-file to write
      */
     public function saveXML($XMLfile)
     {
@@ -48,7 +48,7 @@ class XML_JSON
     /**
      * Load JSON file into $jsonData
      *
-     * @param string    $JSONfile   Filename of the JSON-file to read
+     * @param string $JSONfile Filename of the JSON-file to read
      */
     public function loadJSON($JSONfile)
     {
@@ -59,7 +59,7 @@ class XML_JSON
     /**
      * Save $jsonData into JSON file
      *
-     * @param string    $JSONfile   Filename of the JSON-file to write
+     * @param string $JSONfile Filename of the JSON-file to write
      */
     public function saveJSON($JSONfile)
     {
@@ -79,11 +79,11 @@ class XML_JSON
     /**
      * Convert Array to XML
      *
-     * @param string    $xmlField   The opening tag for the XML file
+     * @param string $xmlField The opening tag for the XML file
      */
     public function array2xml($xmlField)
     {
-        $xml = new SimpleXMLElement($xmlField);
+        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>' . $xmlField);
         $this->createXml($xml, $this->arrayData);
         $this->xmlData = $xml->asXML();
     }
@@ -91,9 +91,9 @@ class XML_JSON
     /**
      * Private method to create XML output
      *
-     * @param SimpleXMLElement  $obj        A SimpleXMLElement object
-     * @param array             $array      The array you want to transform into XML
-     * @param string            $prevKey    The previous key (Default: '')
+     * @param SimpleXMLElement $obj A SimpleXMLElement object
+     * @param array $array The array you want to transform into XML
+     * @param string $prevKey The previous key (Default: '')
      */
     private function createXml(SimpleXMLElement $obj, $array, $prevKey = '')
     {
@@ -147,11 +147,13 @@ class XML_JSON
 
     /**
      * Convert JSON to XML
+     *
+     * @param string $xmlField The opening tag for the XML file
      */
-    public function json2xml()
+    public function json2xml($xmlField)
     {
         $this->json2array();
-        $this->array2xml('<?xml version="1.0" encoding="UTF-8"?><FromJSON></FromJSON>');
+        $this->array2xml($xmlField);
     }
 
     /**
