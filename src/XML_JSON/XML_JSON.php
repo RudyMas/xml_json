@@ -1,20 +1,21 @@
 <?php
+
 namespace RudyMas\XML_JSON;
 
 use RudyMas\FileManager\FileManager;
 use SimpleXMLElement;
 
 /**
- * Class XML_JSON
+ * Class XML_JSON (PHP version 7.0)
  * This class can be used to convert data between an array, XML and/or JSON
  *
  * This class is used in combination with following class:
  *    - FileManager (composer require rudymas/filemanager)
  *
- * @author      Rudy Mas <rudy.mas@rudymas.be>
- * @copyright   2016 - 2017, rudymas.be. (http://www.rudymas.be/)
+ * @author      Rudy Mas <rudy.mas@rmsoft.be>
+ * @copyright   2016 - 2017, rudymas.be. (http://www.rmsoft.be/)
  * @license     https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version     0.5.0
+ * @version     0.5.1
  * @package     RudyMas\XML_JSON
  */
 class XML_JSON
@@ -28,7 +29,7 @@ class XML_JSON
      *
      * @param string $XMLfile Filename of the XML-file to read
      */
-    public function loadXML(string $XMLfile): void
+    public function loadXML(string $XMLfile)
     {
         $file = new FileManager();
         $this->xmlData = $file->loadLittleFile($XMLfile);
@@ -39,7 +40,7 @@ class XML_JSON
      *
      * @param string $XMLfile Filename of the XML-file to write
      */
-    public function saveXML(string $XMLfile): void
+    public function saveXML(string $XMLfile)
     {
         $file = new FileManager();
         $file->saveLittleFile($this->xmlData, $XMLfile);
@@ -50,7 +51,7 @@ class XML_JSON
      *
      * @param string $JSONfile Filename of the JSON-file to read
      */
-    public function loadJSON(string $JSONfile): void
+    public function loadJSON(string $JSONfile)
     {
         $file = new FileManager();
         $this->jsonData = $file->loadLittleFile($JSONfile);
@@ -61,7 +62,7 @@ class XML_JSON
      *
      * @param string $JSONfile Filename of the JSON-file to write
      */
-    public function saveJSON(string $JSONfile): void
+    public function saveJSON(string $JSONfile)
     {
         $file = new FileManager();
         $file->saveLittleFile($this->jsonData, $JSONfile);
@@ -70,7 +71,7 @@ class XML_JSON
     /**
      * Convert XML to Array
      */
-    public function xml2array(): void
+    public function xml2array()
     {
         $this->xml2json();
         $this->arrayData = json_decode($this->jsonData, TRUE);
@@ -81,7 +82,7 @@ class XML_JSON
      *
      * @param string $xmlField The opening tag for the XML file
      */
-    public function array2xml(string $xmlField): void
+    public function array2xml(string $xmlField)
     {
         $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>' . $xmlField);
         $this->createXml($xml, $this->arrayData);
@@ -95,7 +96,7 @@ class XML_JSON
      * @param array $array The array you want to transform into XML
      * @param string $prevKey The previous key (Default: 'data')
      */
-    private function createXml(SimpleXMLElement $obj, array $array, string $prevKey = 'data'): void
+    private function createXml(SimpleXMLElement $obj, array $array, string $prevKey = 'data')
     {
         foreach ($array as $key => $value) {
             if (is_array($value)) {
@@ -123,7 +124,7 @@ class XML_JSON
     /**
      * Convert JSON to Array
      */
-    public function json2array(): void
+    public function json2array()
     {
         $this->arrayData = json_decode($this->jsonData, TRUE);
     }
@@ -131,7 +132,7 @@ class XML_JSON
     /**
      * Convert Array to JSON
      */
-    public function array2json(): void
+    public function array2json()
     {
         $this->jsonData = json_encode($this->arrayData);
     }
@@ -139,7 +140,7 @@ class XML_JSON
     /**
      * Convert XML to JSON
      */
-    public function xml2json(): void
+    public function xml2json()
     {
         $xml = simplexml_load_string($this->xmlData, NULL, LIBXML_NOCDATA);
         $this->jsonData = json_encode($xml);
@@ -150,7 +151,7 @@ class XML_JSON
      *
      * @param string $xmlField The opening tag for the XML file
      */
-    public function json2xml(string $xmlField): void
+    public function json2xml(string $xmlField)
     {
         $this->json2array();
         $this->array2xml($xmlField);
@@ -167,7 +168,7 @@ class XML_JSON
     /**
      * @param array $arrayData
      */
-    public function setArrayData(array $arrayData): void
+    public function setArrayData(array $arrayData)
     {
         $this->arrayData = $arrayData;
     }
@@ -183,7 +184,7 @@ class XML_JSON
     /**
      * @param string $xmlData
      */
-    public function setXmlData(string $xmlData): void
+    public function setXmlData(string $xmlData)
     {
         $this->xmlData = $xmlData;
     }
@@ -199,9 +200,10 @@ class XML_JSON
     /**
      * @param string $jsonData
      */
-    public function setJsonData(string $jsonData): void
+    public function setJsonData(string $jsonData)
     {
         $this->jsonData = $jsonData;
     }
 }
+
 /** End of File XML_JSON.php **/
