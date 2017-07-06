@@ -1,9 +1,6 @@
 # PHPstorm
 .idea/
 
-# Dreamweaver
-_notes/
-
 # Composer Vendor
 /vendor/
 composer.lock

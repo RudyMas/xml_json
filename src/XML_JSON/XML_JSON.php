@@ -15,7 +15,7 @@ use SimpleXMLElement;
  * @author      Rudy Mas <rudy.mas@rmsoft.be>
  * @copyright   2016 - 2017, rudymas.be. (http://www.rmsoft.be/)
  * @license     https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version     0.5.1
+ * @version     0.5.2
  * @package     RudyMas\XML_JSON
  */
 class XML_JSON
@@ -92,11 +92,11 @@ class XML_JSON
     /**
      * Private method to create XML output
      *
-     * @param SimpleXMLElement $obj A SimpleXMLElement object
-     * @param array $array The array you want to transform into XML
-     * @param string $prevKey The previous key (Default: 'data')
+     * @param SimpleXMLElement $obj
+     * @param array $array
+     * @param null|string $prevKey
      */
-    private function createXml(SimpleXMLElement $obj, array $array, string $prevKey = 'data')
+    private function createXml(SimpleXMLElement $obj, array $array, ?string $prevKey = 'data')
     {
         foreach ($array as $key => $value) {
             if (is_array($value)) {
