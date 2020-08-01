@@ -6,20 +6,23 @@
   "authors": [
     {
       "name": "Rudy Mas",
-      "email": "rudy.mas@rudymas.be"
+      "email": "rudy.mas@rudymas.be",
+      "homepage": "http://www.rmsoft.be",
+      "role": "Developer"
     }
   ],
   "minimum-stability": "stable",
   "require": {
-    "php": ">= 7.1",
-    "rudymas/filemanager": "^1"
+    "php": ">= 7.2",
+    "rudymas/filemanager": "^1",
+    "ext-dom": "*",
+    "ext-simplexml": "*",
+    "ext-libxml": "*",
+    "ext-json": "*"
   },
   "autoload": {
-    "classmap": [
-      "src/"
-    ],
     "psr-4": {
-      "RudyMas\\XML_JSON\\": "src/"
+      "RudyMas\\": "src/"
     }
   }
 }

@@ -1,22 +1,19 @@
 <?php
 
-namespace RudyMas\XML_JSON;
+namespace RudyMas;
 
-use RudyMas\FileManager\FileManager;
+use DOMDocument;
 use SimpleXMLElement;
 
 /**
- * Class XML_JSON (PHP version 7.1)
+ * Class XML_JSON (PHP version 7.2)
  * This class can be used to convert data between an array, XML and/or JSON
  *
- * This class is used in combination with following class:
- *    - FileManager (composer require rudymas/filemanager)
- *
  * @author      Rudy Mas <rudy.mas@rmsoft.be>
- * @copyright   2016 - 2018, rudymas.be. (http://www.rmsoft.be/)
+ * @copyright   2016 - 2020, rudymas.be. (http://www.rmsoft.be/)
  * @license     https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version     0.7.0.17
- * @package     RudyMas\XML_JSON
+ * @version     0.8.0.0
+ * @package     RudyMas
  */
 class XML_JSON
 {
@@ -73,8 +70,66 @@ class XML_JSON
      */
     public function xml2array(): void
     {
-        $this->xml2json();
-        $this->arrayData = json_decode($this->jsonData, TRUE);
+        $previous_value = libxml_use_internal_errors(true);
+        $dom = new DOMDocument('1.0', 'UTF-8');
+        $dom->preserveWhiteSpace = false;
+        $dom->loadXml($this->xmlData);
+        libxml_use_internal_errors($previous_value);
+        if (libxml_get_errors()) {
+            $this->arrayData = ['xml_error' => true];
+        } else {
+            $array = $this->Dom2Array($dom);
+            if (isset($array['Document'])) {
+                $array = $array['Document'];
+            }
+            $this->arrayData = $array;
+        }
+    }
+
+    /**
+     * Make an Array from the XLM DOMDocument
+     *
+     * @param $root
+     * @return array|mixed
+     */
+    private function Dom2Array($root)
+    {
+        $result = array();
+
+        if ($root->hasAttributes()) {
+            $attrs = $root->attributes;
+            foreach ($attrs as $attr) {
+                $result['@attributes'][$attr->name] = $attr->value;
+            }
+        }
+
+        if ($root->hasChildNodes()) {
+            $children = $root->childNodes;
+            if ($children->length == 1) {
+                $child = $children->item(0);
+                if (in_array($child->nodeType, [XML_TEXT_NODE, XML_CDATA_SECTION_NODE])) {
+                    $result['_value'] = $child->nodeValue;
+                    return count($result) == 1
+                        ? $result['_value']
+                        : $result;
+                }
+
+            }
+            $groups = array();
+            foreach ($children as $child) {
+                if (!isset($result[$child->nodeName])) {
+                    $result[$child->nodeName] = $this->Dom2Array($child);
+                } else {
+                    if (!isset($groups[$child->nodeName])) {
+                        $result[$child->nodeName] = array($result[$child->nodeName]);
+                        $groups[$child->nodeName] = 1;
+                    }
+                    $result[$child->nodeName][] = $this->Dom2Array($child);
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -97,23 +152,35 @@ class XML_JSON
      * @param array $array
      * @param null|string $prevKey
      */
-    private function createXml(SimpleXMLElement $obj, array $array, ?string $prevKey = 'data'): void
+    private function createXml(SimpleXMLElement &$obj, array $array, ?string $prevKey = 'data'): void
     {
         foreach ($array as $key => $value) {
             if (is_array($value)) {
-                if (is_numeric($key)) {
-                    $node = $obj->addChild($prevKey);
-                    $this->createXml($node, $value);
+                if (isset($value[0])) {
+                    foreach ($value as $subValue) {
+                        if (is_array($subValue)) {
+                            $node = $obj->addChild($key);
+                            $this->createXml($node, $subValue, $key);
+                        } else {
+                            $obj->addChild($key, $subValue);
+                        }
+                    }
                 } elseif ($key == '@attributes') {
                     foreach ($value as $k => $v) {
                         $obj->addAttribute($k, $v);
                     }
                 } else {
-                    if ($prevKey != '' && !is_numeric($key)) $node = $obj->addChild($prevKey); else $node = $obj;
+                    if (isset($value['_value'])) {
+                        $node = $obj->addChild($key, $value['_value']);
+                    } else {
+                        $node = $obj->addChild($key);
+                    }
                     $this->createXml($node, $value, $key);
                 }
             } else {
-                if (is_numeric($key)) {
+                if ($key == '_value') {
+                    // This value is already set!!!
+                } elseif (is_numeric($key)) {
                     $obj->addChild($prevKey, $value);
                 } else {
                     $obj->addChild($key, $value);
@@ -143,8 +210,12 @@ class XML_JSON
      */
     public function xml2json(): void
     {
-        $xml = simplexml_load_string($this->xmlData, NULL, LIBXML_NOCDATA);
-        $this->jsonData = json_encode($xml);
+        $xml = @simplexml_load_string($this->xmlData, NULL, LIBXML_NOCDATA);
+        if ($xml === false) {
+            $this->jsonData = '{"xml_error" : "true"}';
+        } else {
+            $this->jsonData = json_encode($xml);
+        }
     }
 
     /**
@@ -206,5 +277,3 @@ class XML_JSON
         $this->jsonData = $jsonData;
     }
 }
-
-/** End of File XML_JSON.php **/
