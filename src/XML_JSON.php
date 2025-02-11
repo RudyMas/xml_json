@@ -6,13 +6,13 @@ use DOMDocument;
 use SimpleXMLElement;
 
 /**
- * Class XML_JSON (PHP version 7.2)
+ * Class XML_JSON (PHP version 7.4)
  * This class can be used to convert data between an array, XML and/or JSON
  *
  * @author      Rudy Mas <rudy.mas@rmsoft.be>
- * @copyright   2016 - 2020, rudymas.be. (http://www.rmsoft.be/)
+ * @copyright   2016 - 2025, rudymas.be. (http://www.rmsoft.be/)
  * @license     https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version     0.8.0.0
+ * @version     0.9.0.0
  * @package     RudyMas
  */
 class XML_JSON
@@ -20,6 +20,7 @@ class XML_JSON
     private $arrayData;
     private $xmlData;
     private $jsonData;
+    private $csvData;
 
     /**
      * Load XML file into $xmlData
@@ -63,6 +64,28 @@ class XML_JSON
     {
         $file = new FileManager();
         $file->saveLittleFile($this->jsonData, $JSONfile);
+    }
+
+    /**
+     * Load CSV file into $csvData
+     *
+     * @param string $CSVfile Filename of the JSON-file to read
+     */
+    public function loadCSV(string $CSVfile): void
+    {
+        $file = new FileManager();
+        $this->csvData = $file->loadLittleFile($CSVfile);
+    }
+
+    /**
+     * Save $csvData into CSV file
+     *
+     * @param string $CSVfile Filename of the CSV-file to write
+     */
+    public function saveCSV(string $CSVfile): void
+    {
+        $file = new FileManager();
+        $file->saveLittleFile($this->csvData, $CSVfile);
     }
 
     /**
@@ -219,6 +242,68 @@ class XML_JSON
     }
 
     /**
+     * Convert CSV to array
+     *
+     * @param string $delimiter
+     * @param bool $dataLine
+     * @return void
+     */
+    public function csvToArray(string $delimiter = ';', bool $dataLine = true): void
+    {
+        $lines = explode("\n", $this->csvData);
+        $header = null;
+        $data = [];
+
+        foreach ($lines as $line) {
+            if (trim($line) === '') continue; // Skip empty lines
+            $row = str_getcsv($line, $delimiter);
+            if (!$header && $dataLine) {
+                $header = $row;
+            } elseif ($dataLine === false) {
+                $data[] = $row;
+            } else {
+                $data[] = array_combine($header, $row);
+            }
+        }
+
+        $this->setArrayData($data);
+    }
+
+    /**
+     * Convert array to CSV
+     *
+     * @param string $delimiter
+     * @param string $enclosure
+     * @return void
+     */
+    public function arrayToCsv(string $delimiter = ';', string $enclosure = '"'): void
+    {
+        // Extract headers from the first element of the array
+        $header = array_keys($this->arrayData[0]);
+        $csv = '';
+
+        // Open a memory "file" for read/write...
+        $f = fopen('php://memory', 'r+');
+
+        // Write the headers
+        fputcsv($f, $header, $delimiter, $enclosure);
+
+        // Write the data
+        foreach ($this->arrayData as $row) {
+            fputcsv($f, $row, $delimiter, $enclosure);
+        }
+
+        // Rewind the "file" and read its content
+        rewind($f);
+        $csv = stream_get_contents($f);
+
+        // Close the memory "file"
+        fclose($f);
+
+        $this->setCsvData($csv);
+    }
+
+    /**
      * Convert JSON to XML
      *
      * @param string $xmlField The opening tag for the XML file
@@ -275,5 +360,21 @@ class XML_JSON
     public function setJsonData(string $jsonData): void
     {
         $this->jsonData = $jsonData;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCsvData(): string
+    {
+        return $this->csvData;
+    }
+
+    /**
+     * @param string $csvData
+     */
+    public function setCsvData(string $csvData): void
+    {
+        $this->csvData = $csvData;
     }
 }
